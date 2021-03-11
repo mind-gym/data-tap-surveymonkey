@@ -34,8 +34,8 @@ clean:
 	rm -rf pipelinewise_tap_surveymonkey.egg-info
 .PHONY: clean
 
-## tmp/.sentinel.installed-venv                        : installs virtual env
-tmp/.sentinel.installed-venv: requirements.txt setup.py
+## tmp/.sentinel.install-venv                        : installs virtual env
+tmp/.sentinel.install-venv: requirements.txt setup.py
 	@mkdir -p $(@D)
 	test -d $(VENV) && rm -rf $(VENV)
 	$(PYTHON) -m venv $(VENV)
@@ -46,19 +46,19 @@ tmp/.sentinel.installed-venv: requirements.txt setup.py
 	touch $@
 
 ## tmp/.sentinel.lint                                  : lint
-tmp/.sentinel.lint: tmp/.sentinel.installed-venv $(OBJS)
+tmp/.sentinel.lint: tmp/.sentinel.install-venv $(OBJS)
 	@mkdir -p $(@D)
 	$(VENV)/bin/pylint tap_surveymonkey -d C,W,unexpected-keyword-arg,duplicate-code
 	touch $@
 
 ## tmp/.sentinel.unit-tests                            : runs unit tests
-tmp/.sentinel.unit-tests: tmp/.sentinel.installed-venv $(OBJS)
+tmp/.sentinel.unit-tests: tmp/.sentinel.install-venv $(OBJS)
 	@mkdir -p $(@D)
 	$(VENV)/bin/nosetests --where=tests/unit
 	touch $@
 
 ## tmp/.sentinel.integration-tests                     : runs integration tests
-tmp/.sentinel.integration-tests: tmp/.sentinel.installed-venv $(OBJS)
+tmp/.sentinel.integration-tests: tmp/.sentinel.install-venv $(OBJS)
 	@mkdir -p $(@D)
 	$(VENV)/bin/nosetests --where=tests/integration
 	touch $@
