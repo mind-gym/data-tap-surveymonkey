@@ -1,0 +1,30 @@
+---
+name: Deploy
+on:
+  push:
+    branches:
+      - 'master'
+
+jobs:
+  Deploy:
+    name: "Uploads package to Pypi server"
+    runs-on: ubuntu-18.04
+
+    env:
+      PYPISERVER_URL: ${{ secrets.PYPISERVER_URL }}
+
+    steps:
+      - name: Install python3.7
+        id: install-python
+        run: |
+          sudo add-apt-repository ppa:deadsnakes/ppa
+          sudo apt-get update
+          sudo apt-get install python3.7 python3.7-dev python3.7-venv
+
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: "Upload"
+        id: upload
+        run: |
+          make upload
