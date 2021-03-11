@@ -10,7 +10,6 @@ DATETIME_FMT_MAC = "%Y-%m-%dT%H:%M:%S.%fZ"
 SM_DATE_FORMAT = "%Y-%m-%dT%H:%M:%S"
 SM_RESPONSE_DATE_FORMAT = "%Y-%m-%dT%H:%M:%S%z"
 
-
 LOGGER = singer.get_logger()
 
 
@@ -187,12 +186,11 @@ def sync_responses(config, state, simplify=False):
         for survey in surveys.get('data'):
             survey_ids.append(survey.get('id'))
 
-    #TODO Improve incremental loads where a list of survey ids are not provided
+    # TODO Improve incremental loads where a list of survey ids are not provided
     # There are a couple of different options for this;
     # 1. Look at the state of each survey plus a flag on `should I scrape responses on closed surveys?`
     # 2. Look at the last modified for the encapsulating survey (may not come through on the survey list above)
     # https://themindgym.atlassian.net/browse/DB-195
-
 
     if state['bookmarks'].get(stream_id, {}).get('page_sync'):
         last_modified_at = state['bookmarks'][stream_id]['page_sync']
@@ -210,8 +208,7 @@ def sync_responses(config, state, simplify=False):
     if simplify:
         params['simple'] = True
     for survey_id_config in survey_ids:
-        responses = sm_client.make_request(
-            'surveys/%s/responses/bulk' % survey_id_config, params=params, state=state)
+        responses = sm_client.make_request('surveys/%s/responses/bulk' % survey_id_config, params=params, state=state)
 
         while True:
             if not responses:
@@ -245,8 +242,6 @@ def sync_responses(config, state, simplify=False):
             state['bookmarks'][stream_id]['page_sync'] = singer.utils.strftime(
                 find_max_timestamp(state, stream_id))
             params['page'] += 1
-            responses = sm_client.make_request(
-                'surveys/%s/responses/bulk' % survey_id_config, params=params, state=state)
 
     max_time = find_max_timestamp(state, stream_id)
 
