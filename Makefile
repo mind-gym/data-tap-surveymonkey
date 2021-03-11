@@ -17,8 +17,8 @@ help : Makefile
 	@sed -n 's/^##//p' $<
 .PHONY : help
 
-## all                                                 : PHONY, dist/pipelinewise-tap-surveymonkey-$(VERSION).tar.gz
-all: dist/pipelinewise-tap-surveymonkey-$(VERSION).tar.gz
+## all                                                 : PHONY, dist/$(PKG)-$(VERSION).tar.gz
+all: dist/$(PKG)-$(VERSION).tar.gz
 .PHONY: all
 
 ## upload                                              : PHONY, tmp/.sentinel.twine-upload-to-pypi
@@ -31,7 +31,7 @@ clean:
 	rm -rf dist
 	rm -rf build
 	rm -rf tmp
-	rm -rf pipelinewise_tap_surveymonkey.egg-info
+	rm -rf $(PKG).egg-info
 .PHONY: clean
 
 ## tmp/.sentinel.install-venv                        : installs virtual env
