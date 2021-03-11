@@ -5,15 +5,15 @@ SHELL := bash
 MAKEFLAGS += --warn-undefined-variables
 MAKEFLAGS += --no-builtin-rules
 
-PKG := mindgym-target-snowflake
+PKG := mindgym-tap-surveymonkey
 VENV := .venv
 PYTHON := python3.7
-VERSION := 1.10.0
+VERSION := 1.0.1
 
 OBJS := $(shell find . -type f -name "*.py" -not -path "*$(VENV)/*" -not -path "*build/*" -not -path "*dist/*")
 
-## all                                                 : PHONY, dist/pipelinewise-target-snowflake-$(VERSION).tar.gz
-all: dist/pipelinewise-target-snowflake-$(VERSION).tar.gz
+## all                                                 : PHONY, dist/pipelinewise-tap-surveymonkey-$(VERSION).tar.gz
+all: dist/pipelinewise-tap-surveymonkey-$(VERSION).tar.gz
 .PHONY: all
 
 ## upload                                              : PHONY, tmp/.sentinel.twine-upload-to-pypi
@@ -26,7 +26,7 @@ clean:
 	rm -rf dist
 	rm -rf build
 	rm -rf tmp
-	rm -rf pipelinewise_target_snowflake.egg-info
+	rm -rf pipelinewise_tap_surveymonkey.egg-info
 .PHONY: clean
 
 ## tmp/.sentinel.installed-venv                        : installs virtual env
@@ -43,7 +43,7 @@ tmp/.sentinel.installed-venv: requirements.txt setup.py
 ## tmp/.sentinel.lint                                  : lint
 tmp/.sentinel.lint: tmp/.sentinel.installed-venv $(OBJS)
 	@mkdir -p $(@D)
-	$(VENV)/bin/pylint target_snowflake -d C,W,unexpected-keyword-arg,duplicate-code
+	$(VENV)/bin/pylint tap_surveymonkey -d C,W,unexpected-keyword-arg,duplicate-code
 	touch $@
 
 ## tmp/.sentinel.unit-tests                            : runs unit tests
