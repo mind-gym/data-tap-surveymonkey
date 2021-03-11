@@ -166,15 +166,32 @@ def sync_survey_details(config, state):
 
 
 def sync_responses(config, state, simplify=False):
-    survey_id = config.get('survey_id')
-    if not survey_id:
-        raise Exception("Survey ID not provided. Syncing Responses requires a Survey ID. ")
+    survey_id_config = config.get('survey_ids')
 
     stream_id = 'simplified_responses' if simplify else 'responses'
     access_token = config['access_token']
     per_page = int(config.get("page_size", "50"))  # Max 100
     sm_client = SurveyMonkey(access_token)
     last_modified_at = None
+    params = {
+        'per_page': per_page,
+        'page': 1,
+        'include': 'date_modified'
+    }
+
+    survey_ids = []
+    if survey_id_config:
+        survey_ids = survey_id_config
+    else:
+        surveys = sm_client.make_request('surveys', params=params, state=state)
+        for survey in surveys.get('data'):
+            survey_ids.append(survey.get('id'))
+
+    #TODO Improve incremental loads where a list of survey ids are not provided
+    # There are a couple of different options for this;
+    # 1. Look at the state of each survey plus a flag on `should I scrape responses on closed surveys?`
+    # 2. Look at the last modified for the encapsulating survey (may not come through on the survey list above)
+
 
     if state['bookmarks'].get(stream_id, {}).get('page_sync'):
         last_modified_at = state['bookmarks'][stream_id]['page_sync']
@@ -191,44 +208,44 @@ def sync_responses(config, state, simplify=False):
         params['start_modified_at'] = last_modified_at
     if simplify:
         params['simple'] = True
-
-    responses = sm_client.make_request(
-        'surveys/%s/responses/bulk' % survey_id, params=params, state=state)
-
-    while True:
-        if not responses:
-            raise Exception("Resource not found")
-        if responses.get('error'):
-            raise Exception(responses)
-
-        for response in responses['data']:
-            date_modified = response['date_modified']
-            if date_modified[-3:-2] == ":":
-                date_modified = date_modified[:-3] + date_modified[-2:]
-            response_modified = datetime.datetime.strptime(date_modified, SM_RESPONSE_DATE_FORMAT)
-            response_modified_str = singer.utils.strftime(response_modified)
-            if state['bookmarks'].get(stream_id, {}).get(response['id']) == response_modified_str:
-                continue
-
-            patch_time_str(response)
-
-            singer.write_records(stream_id,
-                                 [response]
-                                 )
-
-            state['bookmarks'][stream_id] = {} if not state['bookmarks'].get(
-                stream_id) else state['bookmarks'][stream_id]
-            state['bookmarks'][stream_id][response['id']] = response_modified_str
-            singer.write_state(state)
-
-        if not responses['links'].get('next'):
-            break
-
-        state['bookmarks'][stream_id]['page_sync'] = singer.utils.strftime(
-            find_max_timestamp(state, stream_id))
-        params['page'] += 1
+    for survey_id_config in survey_ids:
         responses = sm_client.make_request(
-            'surveys/%s/responses/bulk' % survey_id, params=params, state=state)
+            'surveys/%s/responses/bulk' % survey_id_config, params=params, state=state)
+
+        while True:
+            if not responses:
+                raise Exception("Resource not found")
+            if responses.get('error'):
+                raise Exception(responses)
+
+            for response in responses['data']:
+                date_modified = response['date_modified']
+                if date_modified[-3:-2] == ":":
+                    date_modified = date_modified[:-3] + date_modified[-2:]
+                response_modified = datetime.datetime.strptime(date_modified, SM_RESPONSE_DATE_FORMAT)
+                response_modified_str = singer.utils.strftime(response_modified)
+                if state['bookmarks'].get(stream_id, {}).get(response['id']) == response_modified_str:
+                    continue
+
+                patch_time_str(response)
+
+                singer.write_records(stream_id,
+                                     [response]
+                                     )
+
+                state['bookmarks'][stream_id] = {} if not state['bookmarks'].get(
+                    stream_id) else state['bookmarks'][stream_id]
+                state['bookmarks'][stream_id][response['id']] = response_modified_str
+                singer.write_state(state)
+
+            if not responses['links'].get('next'):
+                break
+
+            state['bookmarks'][stream_id]['page_sync'] = singer.utils.strftime(
+                find_max_timestamp(state, stream_id))
+            params['page'] += 1
+            responses = sm_client.make_request(
+                'surveys/%s/responses/bulk' % survey_id_config, params=params, state=state)
 
     max_time = find_max_timestamp(state, stream_id)
 
