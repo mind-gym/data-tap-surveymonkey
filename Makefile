@@ -12,6 +12,11 @@ VERSION := 1.0.1
 
 OBJS := $(shell find . -type f -name "*.py" -not -path "*$(VENV)/*" -not -path "*build/*" -not -path "*dist/*")
 
+## help: provides help
+help : Makefile
+	@sed -n 's/^##//p' $<
+.PHONY : help
+
 ## all                                                 : PHONY, dist/pipelinewise-tap-surveymonkey-$(VERSION).tar.gz
 all: dist/pipelinewise-tap-surveymonkey-$(VERSION).tar.gz
 .PHONY: all
@@ -75,7 +80,4 @@ tmp/.sentinel.twine-upload-to-pypi: dist/$(PKG)-$(VERSION).tar.gz
 		dist/*
 	touch $@
 
-## help: provides help
-help : Makefile
-	@sed -n 's/^##//p' $<
-.PHONY : help
+
