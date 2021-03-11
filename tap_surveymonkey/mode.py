@@ -191,6 +191,7 @@ def sync_responses(config, state, simplify=False):
     # There are a couple of different options for this;
     # 1. Look at the state of each survey plus a flag on `should I scrape responses on closed surveys?`
     # 2. Look at the last modified for the encapsulating survey (may not come through on the survey list above)
+    # https://themindgym.atlassian.net/browse/DB-195
 
 
     if state['bookmarks'].get(stream_id, {}).get('page_sync'):
