@@ -2,8 +2,8 @@
 from setuptools import setup
 
 setup(
-    name="tap-surveymonkey",
-    version="1.0.1",
+    name="data-tap-surveymonkey",
+    version="1.0.1.1",
     description="Singer.io tap for extracting data",
     author="Stitch",
     url="http://singer.io",
