@@ -5,10 +5,10 @@ SHELL := bash
 MAKEFLAGS += --warn-undefined-variables
 MAKEFLAGS += --no-builtin-rules
 
-PKG := mindgym-tap-surveymonkey
+PKG := data-tap-surveymonkey
 VENV := .venv
 PYTHON := python3.7
-VERSION := 1.0.1
+VERSION := 1.0.1.1
 
 OBJS := $(shell find . -type f -name "*.py" -not -path "*$(VENV)/*" -not -path "*build/*" -not -path "*dist/*")
 
