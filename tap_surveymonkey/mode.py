@@ -1,6 +1,7 @@
 import datetime
 import pytz
 import singer
+import dateutil.parser
 from tap_surveymonkey.schema import get_schemas, STREAMS
 from tap_surveymonkey.data import SurveyMonkey
 
@@ -8,8 +9,6 @@ DATETIME_PARSE = "%Y-%m-%dT%H:%M:%SZ"
 DATETIME_FMT = "%04Y-%m-%dT%H:%M:%S.%fZ"
 DATETIME_FMT_MAC = "%Y-%m-%dT%H:%M:%S.%fZ"
 SM_DATE_FORMAT = "%Y-%m-%dT%H:%M:%S"
-SM_RESPONSE_DATE_FORMAT = "%Y-%m-%dT%H:%M:%S%z"
-SM_RESPONSE_DATE_FORMAT_BACKUP = "%Y-%m-%dT%H:%M:%S.%f%z"
 
 LOGGER = singer.get_logger()
 
@@ -244,10 +243,7 @@ def sync_responses(config, state, simplify=False):
                 date_modified = response['date_modified']
                 if date_modified[-3:-2] == ":":
                     date_modified = date_modified[:-3] + date_modified[-2:]
-                try:
-                    response_modified = datetime.datetime.strptime(date_modified, SM_RESPONSE_DATE_FORMAT)
-                except ValueError:
-                    response_modified = datetime.datetime.strptime(date_modified, SM_RESPONSE_DATE_FORMAT_BACKUP)
+                response_modified = dateutil.parser.parse(date_modified)
                 response_modified_str = singer.utils.strftime(response_modified)
                 if state['bookmarks'].get(stream_id, {}).get(response['id']) == response_modified_str:
                     continue

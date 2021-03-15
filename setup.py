@@ -12,6 +12,7 @@ setup(
     install_requires=[
         "singer-python==5.6.0",
         "requests==2.22.0",
+        "py-dateutil==2.8.1",
     ],
     extras_require={
         'dev': [
