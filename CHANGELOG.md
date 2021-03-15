@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.0.1.1
+  * Changed the single survey id in `config.json` into a list of survey ids
+  * Changed the default behaviour with responses to retrieve all responses for all surveys if not given an explicit survey
+  id
+
 ## 1.0.1
   * Add layout to Question object schema
   * Set `additionalProperties` to true on all schemas

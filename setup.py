@@ -2,8 +2,8 @@
 from setuptools import setup
 
 setup(
-    name="tap-surveymonkey",
-    version="1.0.1",
+    name="data-tap-surveymonkey",
+    version="1.0.1.1",
     description="Singer.io tap for extracting data",
     author="Stitch",
     url="http://singer.io",
@@ -12,6 +12,7 @@ setup(
     install_requires=[
         "singer-python==5.6.0",
         "requests==2.22.0",
+        "py-dateutil==2.2",
     ],
     extras_require={
         'dev': [

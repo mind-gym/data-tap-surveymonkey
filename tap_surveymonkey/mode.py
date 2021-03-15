@@ -1,6 +1,7 @@
 import datetime
 import pytz
 import singer
+import dateutil.parser
 from tap_surveymonkey.schema import get_schemas, STREAMS
 from tap_surveymonkey.data import SurveyMonkey
 
@@ -8,7 +9,6 @@ DATETIME_PARSE = "%Y-%m-%dT%H:%M:%SZ"
 DATETIME_FMT = "%04Y-%m-%dT%H:%M:%S.%fZ"
 DATETIME_FMT_MAC = "%Y-%m-%dT%H:%M:%S.%fZ"
 SM_DATE_FORMAT = "%Y-%m-%dT%H:%M:%S"
-SM_RESPONSE_DATE_FORMAT = "%Y-%m-%dT%H:%M:%S%z"
 
 LOGGER = singer.get_logger()
 
@@ -164,6 +164,30 @@ def sync_survey_details(config, state):
     return state
 
 
+def find_all_survey_ids(config, state):
+    access_token = config['access_token']
+    sm_client = SurveyMonkey(access_token)
+    per_page = int(config.get("page_size", "50"))
+    params = {
+        'per_page': per_page,
+        'page': 1,
+        'include': 'date_modified'
+    }
+
+    survey_ids = []
+    while True:
+        surveys = sm_client.make_request('surveys', params=params, state=state)
+        for survey in surveys.get('data'):
+            survey_ids.append(survey.get('id'))
+
+        if not surveys['links'].get('next'):
+            break
+
+        params['page'] += 1
+
+    return survey_ids
+
+
 def sync_responses(config, state, simplify=False):
     survey_id_config = config.get('survey_ids')
 
@@ -182,9 +206,7 @@ def sync_responses(config, state, simplify=False):
     if survey_id_config:
         survey_ids = survey_id_config
     else:
-        surveys = sm_client.make_request('surveys', params=params, state=state)
-        for survey in surveys.get('data'):
-            survey_ids.append(survey.get('id'))
+        survey_ids = find_all_survey_ids(config, state)
 
     # TODO Improve incremental loads where a list of survey ids are not provided
     # There are a couple of different options for this;
@@ -208,9 +230,10 @@ def sync_responses(config, state, simplify=False):
     if simplify:
         params['simple'] = True
     for survey_id_config in survey_ids:
-        responses = sm_client.make_request('surveys/%s/responses/bulk' % survey_id_config, params=params, state=state)
 
         while True:
+            responses = sm_client.make_request('surveys/%s/responses/bulk' % survey_id_config, params=params,
+                                               state=state)
             if not responses:
                 raise Exception("Resource not found")
             if responses.get('error'):
@@ -220,7 +243,7 @@ def sync_responses(config, state, simplify=False):
                 date_modified = response['date_modified']
                 if date_modified[-3:-2] == ":":
                     date_modified = date_modified[:-3] + date_modified[-2:]
-                response_modified = datetime.datetime.strptime(date_modified, SM_RESPONSE_DATE_FORMAT)
+                response_modified = dateutil.parser.parse(date_modified)
                 response_modified_str = singer.utils.strftime(response_modified)
                 if state['bookmarks'].get(stream_id, {}).get(response['id']) == response_modified_str:
                     continue
