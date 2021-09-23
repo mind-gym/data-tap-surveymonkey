@@ -3,52 +3,94 @@
   "additionalProperties": true,
   "properties": {
     "title": {
-      "type": ["string", "null"]
+      "type": [
+        "string",
+        "null"
+      ]
     },
     "nickname": {
-      "type": ["string", "null"]
+      "type": [
+        "string",
+        "null"
+      ]
     },
     "category": {
-      "type": ["string", "null"]
+      "type": [
+        "string",
+        "null"
+      ]
     },
     "language": {
-      "type": ["string", "null"]
+      "type": [
+        "string",
+        "null"
+      ]
     },
     "question_count": {
-        "type": ["integer", "null"]
+      "type": [
+        "integer",
+        "null"
+      ]
     },
     "page_count": {
-        "type": ["integer", "null"]
+      "type": [
+        "integer",
+        "null"
+      ]
     },
     "date_created": {
-        "type": ["string", "null"],
-        "format": "date-time"
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time"
     },
     "date_modified": {
-        "type": ["string", "null"],
-        "format": "date-time"
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time"
     },
     "id": {
-        "type": ["string", "null"]
+      "type": [
+        "string",
+        "null"
+      ]
     },
     "href": {
-        "type": ["string", "null"]
+      "type": [
+        "string",
+        "null"
+      ]
     },
     "buttons_text": {
       "type": "object",
       "additionalProperties": true,
       "properties": {
         "done_button": {
-            "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "prev_button": {
-            "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "exit_button": {
-            "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "next_button": {
-            "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         }
       }
     },
@@ -58,28 +100,52 @@
       "properties": {}
     },
     "footer": {
-        "type": ["boolean", "null"]
+      "type": [
+        "boolean",
+        "null"
+      ]
     },
     "folder_id": {
-        "type": ["string", "null"]
+      "type": [
+        "string",
+        "null"
+      ]
     },
     "preview": {
-        "type": ["string", "null"]
+      "type": [
+        "string",
+        "null"
+      ]
     },
     "edit_url": {
-        "type": ["string", "null"]
+      "type": [
+        "string",
+        "null"
+      ]
     },
     "collect_url": {
-        "type": ["string", "null"]
+      "type": [
+        "string",
+        "null"
+      ]
     },
     "analyze_url": {
-        "type": ["string", "null"]
+      "type": [
+        "string",
+        "null"
+      ]
     },
     "summary_url": {
-        "type": ["string", "null"]
+      "type": [
+        "string",
+        "null"
+      ]
     },
     "response_count": {
-        "type": ["integer", "null"]
+      "type": [
+        "integer",
+        "null"
+      ]
     }
+  }
 }
-
