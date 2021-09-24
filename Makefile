@@ -6,7 +6,7 @@ MAKEFLAGS += --warn-undefined-variables
 MAKEFLAGS += --no-builtin-rules
 
 PKG := data-tap-surveymonkey
-VENV := .venv
+VENV := venv
 PYTHON := python3.7
 
 OBJS := $(shell find . -type f -name "*.py" -not -path "*$(VENV)/*" -not -path "*build/*" -not -path "*dist/*")
@@ -42,7 +42,7 @@ upload: .sentinel.upload
 
 # private
 catalog-discovered.json: sample_config.json
-	@PYTHONPATH=./build/lib python tap_surveymonkey/__init__.py -d -c $< > $@
+	@PYTHONPATH=./build/lib $(VENV)/bin/python tap_surveymonkey/__init__.py -d -c $< > $@
 
 .sentinel.venv: requirements.txt setup.py
 	@mkdir -p $(@D)
