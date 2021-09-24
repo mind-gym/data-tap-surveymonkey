@@ -1,6 +1,7 @@
 .env
 .sentinel*
 .venv/*
+catalog-discovered.json
 
 .idea/
 

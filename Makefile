@@ -31,6 +31,9 @@ clean-hard: clean
 ## check     : runs checks
 check: .sentinel.unit-tests .sentinel.integration-tests
 
+## discover  : runs the tap in discovery mode
+discover: build catalog-discovered.json
+
 ## build     : builds the package
 build: .sentinel.build
 
@@ -38,6 +41,9 @@ build: .sentinel.build
 upload: .sentinel.upload
 
 # private
+catalog-discovered.json: sample_config.json
+	@PYTHONPATH=./build/lib python tap_surveymonkey/__init__.py -d -c $< > $@
+
 .sentinel.venv: requirements.txt setup.py
 	@mkdir -p $(@D)
 	test -d $(VENV) && rm -rf $(VENV)
